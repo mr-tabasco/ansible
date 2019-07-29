@@ -48,7 +48,10 @@ class Connection(ConnectionBase):
     def __init__(self, play_context, new_stdin, *args, **kwargs):
         super(Connection, self).__init__(play_context, new_stdin, *args, **kwargs)
 
-        self._host = self._play_context.remote_addr
+        # quick and dirty hack to get things running for now
+        # TODO: replace calling out to lxc with pylxd?
+        lxd_remote = os.getenv('_LXD_REMOTE_NAME', '')  # forget about unicode/str py2 for now
+        self._host = ':'.join([lxd_remote, self._play_context.remote_addr])
         self._lxc_cmd = find_executable("lxc")
 
         if not self._lxc_cmd:
